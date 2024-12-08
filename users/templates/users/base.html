@@ -9,55 +9,122 @@
     <style>
         /* Custom styling for the header strip */
         .header-strip {
-            background-color: #d4d3cf; /* Bootstrap's primary color */
-            color: white;
+            background-color: #879da1; /* Deep teal for professional look */
+            color: #effbfe;
         }
-        /* Sidebar styles */
+
+        /* Sidebar styling */
+        .sidebar {
+            /* height: 100vh; */
+            background: linear-gradient(180deg, #00796b, #004d40); /* Smooth gradient */
+            color: white;
+            padding: 30px 20px;
+            border-right: 1px solid #004d40;
+            width: 250px;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out;
+            border-radius: 0 0 10px 0; /* Rounded corners */
+            overflow: hidden;
+        }
+
+        /* Sidebar heading */
+        .sidebar h3 {
+            font-size: 1.25rem;
+            margin-bottom: 30px;
+            color: #ffffff;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* Sidebar links */
         .sidebar a {
             display: block;
-            padding: 10px;
-            margin-bottom: 5px;
-            color: #333;
+            padding: 10px 20px;
+            margin-bottom: 15px;
+            color: #e0f7fa;
             text-decoration: none;
-            border-radius: 4px;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
         }
+
+        /* Sidebar link hover effects */
         .sidebar a:hover {
-            background-color: #e9ecef;
+            background-color: #004d40;
+            color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transform: scale(1.05);
         }
-        .sidebar {
-            height: 100vh; /* Full height */
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-right: 1px solid #dee2e6;
-            width: 250px; /* Fixed width for sidebar */
+
+        /* Active link styling */
+        .sidebar .active {
+            background-color: #004d40; /* Active link color */
+            color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
+
+        /* Welcome message styling */
+        .sidebar .welcome {
+            font-weight: 600;
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            color: #ffffff;
+            text-align: left;
+        }
+
+        .sidebar .role {
+            color: #80cbc4;
+            font-size: 1rem;
+            text-align: left;
+        }
+
+        .sidebar .role a {
+            color: #80cbc4;
+        }
+
+        /* Content area styling */
         .content-area {
             flex: 1;
             padding: 20px;
             display: flex;
-            justify-content: center; /* Center horizontally */
-            align-items: flex-start; /* Align content at the top */
+            justify-content: center;
+            align-items: flex-start;
         }
+
         .main-content {
-            width: 100%; /* Take up full available width */
-            max-width: 1200px; /* Optional: limit the width of content for better readability */
+            width: 100%;
+            max-width: 1200px;
             padding: 0px;
         }
+
+        /* Media Queries */
         @media (max-width: 768px) {
             .sidebar {
-                display: none; /* Hide sidebar on small screens */
+                display: none;
             }
             .content-area {
-                margin-left: 0; /* Reset margin on small screens */
+                margin-left: 0;
             }
         }
+
+        /* Custom button style */
         .custom-btn {
-            background-color: #0b1721;
-            color: #fff;
+            background-color: #effbfe;
+            color: #51766d;
             padding: 10px 20px;
             border-radius: 5px;
             text-decoration: none;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
         }
+
+        .custom-btn:hover {
+            background-color: #004d40;
+            color: #fff;
+            border: 2px solid #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
     </style>
 </head>
 <body>
@@ -66,11 +133,10 @@
         <div class="container">
             <img src="{% static 'images/logo.png' %}" alt="Logo" style="height: 60px;">
             <h1>Article Gallery</h1>
-            <!-- Conditional content based on user authentication -->
             {% if user.is_authenticated %}
                 <div class="d-flex align-items-center">
                     <div class="dropdown">
-                        <button class="btn btn-link text-white dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-link text-white dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background-color:#00796b; border-radius: 6px;">
                             {{ user.first_name }}
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
@@ -91,25 +157,26 @@
     <!-- Main Content and Sidebar -->
     <div class="d-flex">
         <!-- Sidebar -->
-        {% if user.is_authenticated %}
-            <div class="sidebar">
-                <!-- Welcome message with user link -->
-                <p class="fw-bold">Welcome,<br>{{ user.first_name }} {{ user.last_name }}</p>
-                <hr>
-                
-                <!-- Sidebar links based on user role -->
-                {% if user.is_head %}
-                    <a href="{% url 'head:head_dashboard' %}">Dashboard</a>
-                    <a href="{% url 'head:manage_users' %}">Manage Users</a>
-                {% elif user.is_journalist %}
-                    <a href="{% url 'journalist:journalist_dashboard' %}">Dashboard</a>
-                    <a href="{% url 'journalist:journalist_dashboard_step1' %}">Submit Article</a>
-                {% elif user.is_editor %}
-                    <a href="{% url 'editor:editor_dashboard' %}">Dashboard</a>
-                {% endif %}
-                <a href="{% url 'dashboard' %}">View Published Articles</a>
-            </div>
-        {% endif %}
+    {% if user.is_authenticated %}
+        <div class="sidebar">
+            <!-- <h3>Dashboard</h3> -->
+            <p class="welcome">Welcome, <br>{{ user.first_name }} {{ user.last_name }}</p>
+            <p class="role">Your Role: {{ user.role }}</p>
+            <hr>
+
+            {% if user.is_head %}
+                <a href="{% url 'head:head_dashboard' %}" class="{% if request.path == '/head/dashboard/' %}active{% endif %}">Dashboard</a>
+                <a href="{% url 'head:manage_users' %}" class="{% if request.path == '/head/manage_users/' %}active{% endif %}">Manage Users</a>
+            {% elif user.is_journalist %}
+                <a href="{% url 'journalist:journalist_dashboard' %}" class="{% if request.path == '/journalist_dashboard/' %}active{% endif %}">Dashboard</a>
+                <a href="{% url 'journalist:journalist_dashboard_step1' %}" class="{% if request.path == '/journalist_dashboard_step1/' %}active{% endif %}">Create Article</a>
+            {% elif user.is_editor %}
+                <a href="{% url 'editor:editor_dashboard' %}" class="{% if request.path == '/editor_dashboard/' %}active{% endif %}">Dashboard</a>
+            {% endif %}
+            <a href="{% url 'dashboard' %}" class="{% if request.path == '/dashboard/' %}active{% endif %}">View Published Articles</a>
+        </div>
+    {% endif %}
+
 
         <!-- Content Area -->
         <div class="content-area">

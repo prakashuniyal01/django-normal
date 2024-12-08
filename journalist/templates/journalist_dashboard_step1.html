@@ -8,7 +8,7 @@
         <div class="col-md-8 col-lg-6">
             <div class="card shadow">
                 <div class="card-body">
-                    <h2 class="text-center mb-4">Submit Article </h2>
+                    <h2 class="text-center mb-4" style="color: #00796b;">Submit Article </h2>
                     <form id="articleForm" method="post">
                         {% csrf_token %}
                         
@@ -34,19 +34,19 @@
 
                         <div class="mb-3">
                             <label for="{{ form.author_name.id_for_label }}" class="form-label">Author Name</label>
-                            <input type="text" class="form-control" id="{{ form.author_name.id_for_label }}" name="{{ form.author_name.name }}" required>
+                            <input type="text" class="form-control" id="{{ form.author_name.id_for_label }}" name="{{ form.author_name.name }}" value="{{ request.user.first_name }}"required readonly>
                             <div id="authorNameError" class="text-danger"></div>
                         </div>
 
                         <div class="mb-3">
                             <label for="{{ form.email.id_for_label }}" class="form-label">Email Address</label>
-                            <input type="email" class="form-control" id="{{ form.email.id_for_label }}" name="{{ form.email.name }}" value="{{ form.email.value }}" required>
+                            <input type="email" class="form-control" id="{{ form.email.id_for_label }}" name="{{ form.email.name }}" value="{{ form.email.value }}" required readonly>
                             <div id="emailError" class="text-danger"></div>
                         </div>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-dark">Next</button>
-                        </div>
+                            <button type="submit" class="btn" style="background-color: #00796b; color: #ffff ;border: none;">Next</button>
+                        </div>                        
                     </form>
                 </div>
             </div>
@@ -69,8 +69,8 @@
     
         function validateTitle() {
             const value = titleInput.value;
-            if (value.length < 15 || value.length > 25) {
-                titleError.textContent = 'Title must be between 15 and 25 characters.';
+            if (value.length < 15 || value.length > 30) {
+                titleError.textContent = 'Title must be between 15 and 30 characters.';
                 return false;
             } else {
                 titleError.textContent = '';
@@ -80,8 +80,8 @@
     
         function validateSubtitle() {
             const value = subtitleInput.value;
-            if (value.length < 10 || value.length > 15) {
-                subtitleError.textContent = 'Subtitle must be between 10 and 15 characters.';
+            if (value.length < 10 || value.length > 44) {
+                subtitleError.textContent = 'Subtitle must be between 10 and 45 characters.';
                 return false;
             } else {
                 subtitleError.textContent = '';

@@ -1,0 +1,54 @@
+{% extends 'editor/base.html' %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <!-- Article Header Section -->
+        <div class="col-lg-8 col-md-10 col-sm-12">
+            <div class="card shadow-sm border-0 rounded-lg">
+                <div class="card-body">
+                    <h1 class="text-center text-primary mb-3">{{ article.title }}</h1>
+                    <div class="text-center mb-4 text-muted">
+                        <h5>Author: <span class="font-weight-bold">{{ article.author_name }}</span></h5>
+                        <p><strong>Created At:</strong> <span class="text-secondary">{{ article.created_at|date:"D, d M Y H:i" }}</span></p>
+                        <p><strong>Status:</strong> 
+                            <span class="badge 
+                                {% if article.status == 'published' %}badge-success{% elif article.status == 'submitted' %}badge-warning{% else %}badge-danger{% endif %}">
+                                {{ article.get_status_display }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Article Image Section -->
+        {% if article.image %}
+            <div class="col-12 mt-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <img src="{{ article.image.url }}" alt="Article Image" class="img-fluid rounded-3 shadow-sm" style="max-height: 400px; object-fit: cover;">
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Article Content Section -->
+        <div class="col-lg-8 col-md-10 col-sm-12 mt-4">
+            <div class="card shadow-sm border-0 rounded-lg">
+                <div class="card-body">
+                    <h4 class="text-dark mb-3">Content</h4>
+                    <p class="text-muted">{{ article.content }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back Button Section -->
+        <div class="col-12 my-4 text-center">
+            <a href="{% url 'journalist:journalist_dashboard' %}" class="btn btn-lg btn-primary px-4 py-2 rounded-pill shadow-sm transition-all">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

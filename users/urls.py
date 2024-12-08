@@ -14,6 +14,7 @@ urlpatterns = [
     path('', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
     path('user_profile/', user_profile_view, name='user_profile'),
+    path('change_password/', change_password, name='change_password'),
     path('journalist_dashboard/', journalist_dashboard, name='journalist_dashboard'),
     path('editor_dashboard/', editor_dashboard, name='editor_dashboard'),
     path('head_dashboard/', head_dashboard, name='head_dashboard'),

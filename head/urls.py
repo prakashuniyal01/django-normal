@@ -22,5 +22,7 @@ urlpatterns = [
     # Manage Articles
     path('manage-articles/', views.manage_articles, name='manage_articles'),
     path('edit-article/<int:pk>/', views.edit_article, name='edit_article'),
-    path('delete-article/<int:pk>/', views.delete_article, name='delete_article'),
+    path('delete-article/<int:article_id>/', views.delete_article, name='delete_article'),
+    # path('manage-articles/', views.manage_articles, name='manage_articles'),
+
 ]

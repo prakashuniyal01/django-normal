@@ -15,5 +15,7 @@ urlpatterns = [
 
     path('edit/<int:article_id>/', edit_article, name='edit_article'),
     path('delete/<int:article_id>/', delete_article, name='delete_article'),
-    
+    path('article/<int:article_id>/', show_article, name='show_article'),
+
+
 ]

@@ -34,7 +34,7 @@
                     <div class="form-group">
                         <label for="id_username">Username</label>
                         <input type="text" class="form-control" id="id_username" name="username" required>
-                        <div class="invalid-feedback">Username is required and must be unique (max 8 characters). It can only contain letters, numbers, or periods (`.`) and must not start with a special character or number.</div>
+                        <div class="invalid-feedback">Username is required and must be unique (max 12 characters). It can only contain letters, numbers, or periods (`.`) and must not start with a special character or number.</div>
                     </div>
                     <div class="form-group">
                         <label for="id_email">Email address</label>
@@ -96,9 +96,9 @@
                         </div>
                     {% endif %}
 
-                    <button type="submit" class="btn  btn-block" style="background-color:#d4d3cf;">Register</button>
+                    <button type="submit" class="btn  btn-block" style="background-color:#00796b;">Register</button>
                     <p class="line-container mt-2">
-                        Came here by mistake. <a href="{% url 'login' %}" >Don't worry, Touch Me!!!</a>
+                        Welcome! <a href="{% url 'login' %}" >Log in here</a> if you have an existing account.
                     </p>
 
                 </form>
@@ -127,7 +127,7 @@
 
             function validateUsername() {
                 var usernameValue = username.value;
-                var valid = /^[a-zA-Z][a-zA-Z0-9.]{0,7}$/.test(usernameValue);
+                var valid = /^[a-zA-Z][a-zA-Z0-9.]{0,11}$/.test(usernameValue);
                 if (!valid) {
                     username.classList.add('is-invalid');
                     username.classList.remove('is-valid');

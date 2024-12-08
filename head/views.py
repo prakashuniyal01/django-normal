@@ -1,23 +1,57 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
-from journalist.models import Article
+from journalist.models import Article, Category
 from django.contrib import messages
 from head.forms import *
 from users.decorators import role_required
 from django.contrib.auth import logout as auth_logout
+from django.core.paginator import Paginator
+from django.db.models import Q
 
 
 
 # Admin Dashboard
 @role_required('head')
 def head_dashboard(request):
+
+    search_query = request.GET.get('search', '')
+    category_filter = request.GET.get('category', '')
+
     articles = Article.objects.all()
+    categories = Category.objects.all()
+
+    if search_query:
+        articles = articles.filter(Q(title__icontains=search_query))
+    
+    if category_filter:
+        articles = articles.filter(category__name=category_filter)
+
+    submitted_articles = articles.filter(status='submitted')
+    reviewed_articles = articles.exclude(status='submitted')
+
+    published_count = Article.objects.filter(status='published').count()
+    submitted_count = Article.objects.filter(status='submitted').count()
+    rejected_count = Article.objects.filter(status='rejected').count()
     context = {
         'articles': articles,
+        'published_count': published_count,
+        'submitted_count': submitted_count,
+        'rejected_count': rejected_count,
+        'search_query': search_query,
+        'categories': categories,
+        'category_filter': category_filter,
     }
-    return render(request, 'head_dashboard.html', context)
+     # Pagination
+    paginator = Paginator(submitted_articles, 5)  
+    page = request.GET.get('page')
+    paginated_submitted_articles = paginator.get_page(page)
 
+    paginator_reviewed = Paginator(reviewed_articles, 5)
+    page_reviewed = request.GET.get('page_reviewed')
+    paginated_reviewed_articles = paginator_reviewed.get_page(page_reviewed)
+
+    return render(request, 'head_dashboard.html', context)
 def logout_view(request):
     auth_logout(request)
     request.session.flush()
@@ -98,7 +132,6 @@ def edit_user(request, user_id):
     return render(request, 'edit_user.html', {'form': form})
 
 @role_required('head')
-
 def delete_user(request, user_id):
     if not request.user.is_authenticated or not (request.user.is_head or request.user.is_superuser):
         return redirect('login')
@@ -118,7 +151,6 @@ from journalist.models import Article
 from head.forms import ArticleForm
 
 @role_required('head')
-
 def manage_articles(request):
     if not request.user.is_authenticated or not (request.user.is_head or request.user.is_superuser):
         return redirect('login')
@@ -137,7 +169,7 @@ def edit_article(request, pk):
         form = ArticleForm(request.POST, request.FILES, instance=article)
         if form.is_valid():
             form.save()
-            return redirect('manage_articles')  # Ensure this URL exists and is correct
+            return redirect('head:manage_articles')  # Ensure this URL exists and is correct
         else:
             # Show form errors if validation fails
             print(form.errors)  # Debugging step to see errors in the console
@@ -155,6 +187,12 @@ def delete_article(request, article_id):
     
     if request.method == 'POST':
         article.delete()
-        return redirect('manage_articles')
+        return redirect('head:head_dashboard')
     
     return render(request, 'head/delete_article.html', {'article': article})
+
+# @role_required('head')
+# def manage_articles(request):
+#     articles = Article.objects.filter(author=request.user)
+#     return render(request, 'head/manage_articles.html', {'articles': articles})
+

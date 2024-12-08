@@ -1,4 +1,4 @@
-{% extends "journalist/jbase.html" %}
+{% extends "users/base.html" %}
 
 {% block title %}Edit Article{% endblock %}
 
@@ -12,15 +12,23 @@
             <label for="title">Title:</label>
             <input type="text" class="form-control" id="title" name="title" value="{{ article.title }}" required>
         </div>
+        <div class="form-group">
+            <label for="subtitle">Subtitle:</label>
+            <input type="text" class="form-control" id="subtitle" name="subtitle" value="{{ article.subtitle }}" required>
+        </div>
 
         <div class="form-group">
             <label for="content">Content:</label>
             <textarea class="form-control" id="content" name="content" rows="6" required>{{ article.content }}</textarea>
         </div>
 
+      <div class="form-group">
+        <label for="author_name">Author:</label>
+        <input type="text" class="form-control" id="author_name" name="author_name" value="{{ article.author_name }}" required>
+    </div>
         <div class="form-group">
-            <label for="author">Author:</label>
-            <input type="text" class="form-control" id="author" name="author" value="{{ article.author }}" required>
+            <label for="email">Email:</label>
+            <input type="text" class="form-control" id="email" name="email" value="{{ article.email }}" required>
         </div>
 
         <div class="form-group">
@@ -31,15 +39,17 @@
             {% endif %}
         </div>
 
-        <div class="form-group">
-            <label for="tags">Tags:</label>
-            <input type="text" class="form-control" id="tags" name="tags" value="{{ article.tags }}" placeholder="Comma-separated tags">
-        </div>
+        <select name="tags" id="tags" multiple>
+        {% for tag in form.tags.field.queryset %}
+        <option value="{{ tag.id }}" {% if tag in article.tags.all %}selected{% endif %}>{{ tag }}</option>
+        {% endfor %}
+        </select>
 
-        <div class="form-group">
-            <label for="category">Category:</label>
-            <input type="text" class="form-control" id="category" name="category" value="{{ article.category }}" required>
-        </div>
+        <select name="category" id="category">
+        {% for category in form.category.field.queryset %}
+        <option value="{{ category.id }}" {% if category == article.category %}selected{% endif %}>{{ category }}</option>
+        {% endfor %}
+        </select>
 
         <div class="form-group">
             <label for="publish_date">Publish Date:</label>

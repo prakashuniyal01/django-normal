@@ -62,6 +62,7 @@ class ArticleForm(forms.ModelForm):
         if not forms.EmailField().clean(email):
             raise forms.ValidationError("Enter a valid email address.")
         return email
+    
 
 
 class UserRoleForm(forms.ModelForm):

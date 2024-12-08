@@ -16,6 +16,8 @@ from django.urls import reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+import logging
+logger = logging.getLogger(__name__)
 
 
 def register(request):
@@ -69,51 +71,37 @@ def update_profile(request):
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import authenticate
-from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import make_password
-from .models import CustomUser  # Use your actual custom user model
+from .models import CustomUser
 
 @login_required
 def user_profile_view(request):
     user = request.user
 
     if request.method == 'POST':
-        if 'update_profile' in request.POST:
-            first_name = request.POST.get('first_name', '').strip()
-            last_name = request.POST.get('last_name', '').strip()
+        # Handle profile update
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
 
-            if not first_name or not last_name:
-                messages.error(request, 'First name and last name cannot be empty.')
-            else:
-                user.first_name = first_name
-                user.last_name = last_name
-                user.save()
-                messages.success(request, 'Your profile has been updated.')
+        # Validate fields
+        if not first_name or not last_name:
+            messages.error(request, 'First name and last name cannot be empty.')
+        else:
+            # Update user's first and last name
+            user.first_name = first_name
+            user.last_name = last_name
+            user.save()
 
+            # Show success message and log the change
+            messages.success(request, 'Your profile has been updated.')
+            logger.debug("Profile updated successfully.")
+
+            # Redirect to the same page to show the updated info
             return redirect('user_profile')
 
-        elif 'change_password' in request.POST:
-            current_password = request.POST.get('current_password')
-            new_password = request.POST.get('new_password')
-            confirm_password = request.POST.get('confirm_password')
-
-            if not user.check_password(current_password):
-                messages.error(request, 'Your current password is incorrect.')
-            elif new_password != confirm_password:
-                messages.error(request, 'New passwords do not match.')
-            else:
-                try:
-                    validate_password(new_password, user=user)
-                    user.set_password(new_password)
-                    user.save()
-                    update_session_auth_hash(request, user)
-                    messages.success(request, 'Your password has been changed successfully.')
-                except ValidationError as e:
-                    messages.error(request, '; '.join(e.messages))
-
-            return redirect('user_profile')
-
+    # Render the profile page with user info
     return render(request, 'user_profile.html', {'user': user})
+
 
 @login_required
 def change_password(request):
@@ -121,12 +109,16 @@ def change_password(request):
         form = PasswordChangeForm(user=request.user, data=request.POST)
         if form.is_valid():
             user = form.save()
-            update_session_auth_hash(request, user)  # Important for keeping user logged in after password change
+            update_session_auth_hash(request, user)  # Keeps user logged in after password change
+            messages.success(request, 'Your password has been updated.')
             return redirect('user_profile')  # Redirect after successful password change
+        # else:
+        #     # logger.debug(f"Form errors: {form.errors}")  # Debugging logs
     else:
         form = PasswordChangeForm(user=request.user)
     
-    return render(request, 'users/user_profile.html', {'password_form': form})
+    return render(request, 'user_profile.html', {'password_form': form})
+
 
 def login_view(request):
     if request.method == 'POST':
@@ -185,6 +177,10 @@ class ArticleListView(ListView):
     context_object_name = 'articles'
     ordering = ['-publish_date']
 
+    def get_queryset(self):
+        # Filter to show only published articles
+        return Article.objects.filter(status='published').order_by('-publish_date')
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         for article in context['articles']:
@@ -197,6 +193,7 @@ class ArticleListView(ListView):
                 article.last_comment = None
                 article.commenter = None
         return context
+
 
 class ArticleDetailView(DetailView):
     model = Article

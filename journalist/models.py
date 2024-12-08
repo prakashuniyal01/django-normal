@@ -19,9 +19,9 @@ class Category(models.Model):
 class Article(models.Model):
     STATUS_CHOICES = [
         ('submitted', 'Submitted'),
-        ('accepted', 'Accepted'),
-        ('rejected', 'Rejected'),
+        ('reviewed', 'Reviewed'),
         ('published', 'Published'),
+        ('rejected', 'Rejected'),
     ]
 
     CATEGORY_CHOICES = [

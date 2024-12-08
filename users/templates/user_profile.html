@@ -43,19 +43,22 @@
     <!-- Change Password Form -->
     <div id="changePasswordForm" class="mt-4" style="display: none;">
         <h3 class="text-center">Change Password</h3>
-        <form id="passwordForm" method="POST" action="{% url 'user_profile' %}">
+        <form id="passwordForm" method="POST" action="{% url 'change_password' %}">
             {% csrf_token %}
             <div class="mb-3">
-                <label for="current_password" class="form-label">Current Password</label>
-                <input type="password" id="current_password" name="current_password" class="form-control" required>
+                <label for="old_password" class="form-label">Current Password</label>
+                <input type="password" id="old_password" name="old_password" class="form-control" required>
+                <div id="currentPasswordError" class="text-danger"></div>
             </div>
             <div class="mb-3">
-                <label for="new_password" class="form-label">New Password</label>
-                <input type="password" id="new_password" name="new_password" class="form-control" required>
+                <label for="new_password1" class="form-label">New Password</label>
+                <input type="password" id="new_password1" name="new_password1" class="form-control" required>
+                <div id="newPasswordError" class="text-danger"></div>
             </div>
             <div class="mb-3">
-                <label for="confirm_password" class="form-label">Confirm New Password</label>
-                <input type="password" id="confirm_password" name="confirm_password" class="form-control" required>
+                <label for="new_password2" class="form-label">Confirm New Password</label>
+                <input type="password" id="new_password2" name="new_password2" class="form-control" required>
+                <div id="confirmPasswordError" class="text-danger"></div>
             </div>
             <div class="text-center">
                 <button type="submit" name="change_password" class="btn btn-danger">Change Password</button>
@@ -119,11 +122,11 @@ function capitalize(str) {
 
 // Real-time validation for change password
 document.getElementById('passwordForm').addEventListener('input', function(event) {
-    const oldPassword = document.getElementById('old_password');
-    const newPassword1 = document.getElementById('new_password1');
-    const newPassword2 = document.getElementById('new_password2');
+    const currentPassword = document.getElementById('old_password');
+    const newPassword = document.getElementById('new_password1');
+    const confirmPassword = document.getElementById('new_password2');
     
-    const oldPasswordError = document.getElementById('oldPasswordError');
+    const currentPasswordError = document.getElementById('currentPasswordError');
     const newPasswordError = document.getElementById('newPasswordError');
     const confirmPasswordError = document.getElementById('confirmPasswordError');
     
@@ -132,27 +135,48 @@ document.getElementById('passwordForm').addEventListener('input', function(event
     const firstName = document.getElementById('first_name').value;
     const lastName = document.getElementById('last_name').value;
 
+    let isValid = true; // Track validity of inputs
+
     // Validate current password
-    if (!oldPassword.value) {
-        oldPasswordError.textContent = 'Current password is required.';
+    if (!currentPassword.value) {
+        currentPasswordError.textContent = 'Current password is required.';
+        isValid = false;
     } else {
-        oldPasswordError.textContent = '';
+        currentPasswordError.textContent = '';
     }
-    
+
     // Validate new password
-    const newPasswordValue = newPassword1.value;
-    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8}$/;
-    if (!passwordPattern.test(newPasswordValue) || newPasswordValue.includes(username) || newPasswordValue.includes(email) || newPasswordValue.includes(firstName) || newPasswordValue.includes(lastName)) {
-        newPasswordError.textContent = 'Password must be 8 characters long, contain one special character, one lowercase letter, one uppercase letter, and must not be similar to personal information.';
+    const newPasswordValue = newPassword.value;
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordPattern.test(newPasswordValue)) {
+        newPasswordError.textContent = 'Password must be at least 8 characters long, contain one special character, one lowercase letter, one uppercase letter, and one number.';
+        isValid = false;
+    } else if (
+        newPasswordValue.includes(username) || 
+        newPasswordValue.includes(email) || 
+        newPasswordValue.includes(firstName) || 
+        newPasswordValue.includes(lastName)
+    ) {
+        newPasswordError.textContent = 'Password must not be similar to your username, email, first name, or last name.';
+        isValid = false;
     } else {
         newPasswordError.textContent = '';
     }
-    
+
     // Validate confirm new password
-    if (newPassword1.value !== newPassword2.value) {
+    if (newPassword.value !== confirmPassword.value) {
         confirmPasswordError.textContent = 'Passwords do not match.';
+        isValid = false;
     } else {
         confirmPasswordError.textContent = '';
+    }
+
+    // If everything is valid, allow form submission or proceed with other actions
+    if (isValid) {
+        // Optionally, you can enable a submit button if everything is valid
+        document.getElementById('submitBtn').disabled = false;
+    } else {
+        document.getElementById('submitBtn').disabled = true;
     }
 });
 
@@ -166,17 +190,7 @@ function showNotification(message) {
     }, 5000);
 }
 
-// Example of showing notification after form submission
-document.getElementById('profileForm').addEventListener('submit', function(event) {
-    // Add your form submission logic here
-    event.preventDefault(); // Prevent form submission for demo purposes
-    showNotification('Your Profile has Updated!!!');
-});
 
-document.getElementById('passwordForm').addEventListener('submit', function(event) {
-    // Add your form submission logic here
-    event.preventDefault(); // Prevent form submission for demo purposes
-    showNotification('Your Password has Changed!!!');
-});
+
 </script>
 {% endblock %}

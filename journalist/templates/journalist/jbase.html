@@ -18,29 +18,71 @@
             transform: translateX(-50%);
         }
         /* Sidebar styling */
-        .sidebar {
-            height: 100vh; /* Full height */
-            background-color: #f8f9fa;
-            padding: 50px;
-        }
-        .sidebar a {
-            text-decoration: none;
-            color: #000;
-            display: block;
-            margin-bottom: 15px;
-            font-size: 18px;
-        }
-        .sidebar a:hover {
-            background-color: #d4d3cf;
-            color: #fff;
-            padding-left: 1px;
-        }
-        /* Centering main content */
-        .sidebar {
-            height: 100vh; /* Full height */
-            background-color: #f8f9fa;
-            padding: 50px;
-        }
+         /* Sidebar styling */
+    .sidebar {
+        height: 100vh; /* Full height */
+        background-color: #343a40; /* Dark theme for sidebar */
+        color: #ffffff; /* White text */
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar .user-info {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .sidebar .user-info img {
+        border-radius: 50%; /* Circular avatar */
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        margin-bottom: 10px;
+        border: 2px solid #ffffff; /* Optional: border for profile picture */
+    }
+
+    .sidebar .user-info .username {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .sidebar .user-info .role {
+        font-size: 14px;
+        color: #d4d3cf;
+    }
+
+    .sidebar a {
+        text-decoration: none;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        padding: 10px 15px;
+        border-radius: 5px;
+        font-size: 16px;
+        width: 100%;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .sidebar a:hover {
+        background-color: #495057;
+        color: #ffffff;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar a .icon {
+        margin-right: 10px;
+        font-size: 20px;
+    }
+
+    .sidebar hr {
+        border-color: rgba(255, 255, 255, 0.2);
+        width: 100%;
+        margin: 20px 0;
+    }
         .content-area {
             margin-left: 20px; /* Adjust width of sidebar */
             display: flex;
@@ -85,14 +127,25 @@
     <div class="d-flex">
         <!-- Sidebar -->
         <div class="sidebar">
-            <!-- Welcome message with user link -->
-            <p class="fw-bold">Welcome,<br> {{ user.first_name }} {{ user.last_name }}</p>
+            <!-- User Info -->
+            <div class="user-info">
+                <img src="{% static 'images/default-avatar.png' %}" alt="User Avatar">
+                <p class="username">{{ user.first_name }} {{ user.last_name }}</p>
+                <p class="role">Journalist</p>
+            </div>
+
             <hr>
 
-            <!-- Sidebar links -->
-            <a href="{% url 'journalist:journalist_dashboard' %}">Dashboard</a>
-            <a href="{% url 'journalist:journalist_dashboard_step1' %}">Submit Article</a>
-            <a href="{% url 'dashboard' %}">View Published Articles</a>
+            <!-- Sidebar Links -->
+            <a href="{% url 'journalist:journalist_dashboard' %}">
+                <i class="icon bi bi-speedometer2"></i> Dashboard
+            </a>
+            <a href="{% url 'journalist:journalist_dashboard_step1' %}">
+                <i class="icon bi bi-pencil-square"></i> Submit Article
+            </a>
+            <a href="{% url 'dashboard' %}">
+                <i class="icon bi bi-newspaper"></i> View Published Articles
+            </a>
         </div>
 
         <!-- Main Content Area -->

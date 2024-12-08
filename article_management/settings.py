@@ -13,6 +13,7 @@ import ssl
 import certifi
 from pathlib import Path
 import os
+import django.core.mail.backends.smtp
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -150,15 +151,16 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'bunnygupta578@gmail.com'
-EMAIL_HOST_PASSWORD = 'awhj xsrx ymgg uxuv'  # Use the app-specific password
-DEFAULT_FROM_EMAIL = 'bunnygupta578@gmail.com'
+EMAIL_HOST_USER = 'rohit.aggar.11@gmail.com'
+EMAIL_HOST_PASSWORD = 'mfuy pttj qius sbky'  # Use the app-specific password
+DEFAULT_FROM_EMAIL = 'rohit.aggar.11@gmail.com'
 
 EMAIL_SSL_CERTFILE = certifi.where()
 EMAIL_SSL_KEYFILE = None
 EMAIL_TIMEOUT = None
 
-import django.core.mail.backends.smtp
+EDITOR_EMAIL = 'ankitk908432@gmail.com'
+
 django.core.mail.backends.smtp.EmailBackend.ssl_context = ssl.create_default_context(cafile=certifi.where())
 
 

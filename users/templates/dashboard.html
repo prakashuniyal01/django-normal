@@ -6,36 +6,39 @@
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-12">
-            <div class="sticky-top bg-light">
+            <div class="sticky-top bg-light mb-4">
+                <!-- Search bar, filters, or additional elements can go here -->
             </div>
             <div class="feed-container">
                 {% for article in articles %}
-                    <div class="card mb-4 shadow-sm border-light">
+                    <div class="card mb-4 shadow-lg border-0 rounded-lg overflow-hidden">
                         {% if article.image %}
                             <div class="img-container">
                                 <img src="{{ article.image.url }}" class="card-img-top" alt="{{ article.title }}">
                             </div>
                         {% endif %}
                         <div class="card-body">
-                            <h5 class="card-title">{{ article.title }}</h5>
+                            <h5 class="card-title text-dark">{{ article.title }}</h5>
                             <h6 class="card-subtitle mb-2 text-muted">{{ article.subtitle }}</h6>
-                            <p class="card-text">{{ article.content|slice:":200" }}...</p>
-                            <a href="{% url 'article_detail' article.pk %}" class="btn btn-primary">Read More</a>
-                            {% comment %} <button class="btn btn-outline-primary ms-2 like-button" data-article-id="{{ article.pk }}">
-                                {% if user in article.likes.all %}
-                                    <i class="fas fa-thumbs-up"></i> Unlike
-                                {% else %}
-                                    <i class="far fa-thumbs-up"></i> Like
-                                {% endif %}
-                            </button> {% endcomment %}
-                            {% comment %} <span class="badge bg-secondary ms-2 like-count">{{ article.likes.count }} Likes</span>
-                            <div class="mt-2">
-                                <strong>Last comment:</strong> {{ article.last_comment }} by {{ article.commenter }}
-                            </div> {% endcomment %}
+                            <p class="card-text text-muted">{{ article.content|slice:":200" }}...</p>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <a href="{% url 'article_detail' article.pk %}" class="btn btn-primary btn-sm">Read More</a>
+                                <div class="d-flex align-items-center">
+                                    <!-- Like/Unlike button -->
+                                    <button class="btn btn-outline-primary btn-sm ms-2 like-button" data-article-id="{{ article.pk }}">
+                                        {% if user in article.likes.all %}
+                                            <i class="fas fa-thumbs-up"></i> Unlike
+                                        {% else %}
+                                            <i class="far fa-thumbs-up"></i> Like
+                                        {% endif %}
+                                    </button>
+                                    <span class="badge bg-light text-primary ms-2 like-count">{{ article.likes.count }} Likes</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 {% empty %}
-                    <p class="text-center">No articles available.</p>
+                    <p class="text-center text-muted">No articles available.</p>
                 {% endfor %}
             </div>
         </div>
@@ -73,6 +76,12 @@
     .card {
         border: none;
         margin: 0 auto;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 
     .img-container {
@@ -83,24 +92,102 @@
     }
 
     .card-img-top {
-        width: auto;
-        height: auto;
-        max-width: 100%; /* Adjust the image to fit the card width */
-        max-height: 300px; /* Optional: Control the max height of the image */
-        object-fit: cover; /* Ensure the image covers the area */
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        transition: transform 0.5s ease-in-out;
+    }
+
+    .card-img-top:hover {
+        transform: scale(1.1);
     }
 
     .card-body {
-        padding: 15px;
+        padding: 20px;
+        background-color: #f8f9fa;
+    }
+
+    .card-title {
+        font-size: 1.2rem;
+        font-weight: 500;
+        color: #343a40;
+    }
+
+    .card-subtitle {
+        font-size: 0.95rem;
+        font-weight: 400;
+        color: #6c757d;
+    }
+
+    .card-text {
+        font-size: 0.95rem;
+        color: #6c757d;
     }
 
     .like-button {
         margin-top: 10px;
+        border-radius: 20px;
+        transition: background-color 0.3s ease;
     }
 
+    .like-button:hover {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .like-count {
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .badge {
+        font-size: 0.85rem;
+    }
+
+    /* Sticky top bar */
     .sticky-top {
-        background-color: #fff;
+        position: sticky;
+        top: 0;
         z-index: 10;
+        background-color: white;
+        padding: 15px 0;
+    }
+
+    /* Mobile and Tablet Adjustments */
+    @media (max-width: 768px) {
+        .card-img-top {
+            height: 150px;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+        }
+
+        .card-body {
+            padding: 15px;
+        }
+
+        .like-button {
+            font-size: 0.85rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .card-img-top {
+            height: 120px;
+        }
+
+        .card-title {
+            font-size: 1rem;
+        }
+
+        .card-body {
+            padding: 12px;
+        }
+
+        .like-button {
+            font-size: 0.8rem;
+        }
     }
 </style>
 {% endblock %}
