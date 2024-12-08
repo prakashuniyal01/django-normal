@@ -1,0 +1,58 @@
+{% extends 'users/base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-5" style="max-width: 1200px; margin: auto;">
+
+
+    <!-- Responsive Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Current Role</th>
+                    <th class="text-center">Change User Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.username|capfirst }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        {% if user.is_journalist %}
+                            Journalist
+                        {% elif user.is_editor %}
+                            Editor
+                        {% elif user.is_head %}
+                            Head
+                        {% else %}
+                            No Role
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        <form method="post" action="{% url 'head:manage_users' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            <select name="user_type" class="form-select me-2">
+                                <option value="journalist" {% if user.is_journalist %}selected{% endif %}>Journalist</option>
+                                <option value="editor" {% if user.is_editor %}selected{% endif %}>Editor</option>
+                                <option value="head" {% if user.is_head %}selected{% endif %}>Head</option>
+                            </select>
+                            <button type="submit" class="btn btn-primary mt-2">Update Role</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">No users available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

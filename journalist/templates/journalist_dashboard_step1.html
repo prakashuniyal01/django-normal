@@ -1,0 +1,138 @@
+{% extends 'users/base.html' %}
+
+{% block title %}Submit Article - Step 1{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="text-center mb-4">Submit Article </h2>
+                    <form id="articleForm" method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.title.id_for_label }}" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="{{ form.title.id_for_label }}" name="{{ form.title.name }}" required>
+                            <div id="titleError" class="text-danger"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.subtitle.id_for_label }}" class="form-label">Subtitle</label>
+                            <input type="text" class="form-control" id="{{ form.subtitle.id_for_label }}" name="{{ form.subtitle.name }}" required>
+                            <div id="subtitleError" class="text-danger"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.content.id_for_label }}" class="form-label">Article Content</label>
+                            <textarea class="form-control" id="{{ form.content.id_for_label }}" name="{{ form.content.name }}" rows="5" required></textarea>
+                            {% if form.content.errors %}
+                                <div class="text-danger">{{ form.content.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.author_name.id_for_label }}" class="form-label">Author Name</label>
+                            <input type="text" class="form-control" id="{{ form.author_name.id_for_label }}" name="{{ form.author_name.name }}" required>
+                            <div id="authorNameError" class="text-danger"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.email.id_for_label }}" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="{{ form.email.id_for_label }}" name="{{ form.email.name }}" value="{{ form.email.value }}" required>
+                            <div id="emailError" class="text-danger"></div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-dark">Next</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('articleForm');
+        const titleInput = form.querySelector('[name="title"]');
+        const subtitleInput = form.querySelector('[name="subtitle"]');
+        const authorNameInput = form.querySelector('[name="author_name"]');
+        const emailInput = form.querySelector('[name="email"]');
+        
+        const titleError = document.getElementById('titleError');
+        const subtitleError = document.getElementById('subtitleError');
+        const authorNameError = document.getElementById('authorNameError');
+        const emailError = document.getElementById('emailError');
+    
+        function validateTitle() {
+            const value = titleInput.value;
+            if (value.length < 15 || value.length > 25) {
+                titleError.textContent = 'Title must be between 15 and 25 characters.';
+                return false;
+            } else {
+                titleError.textContent = '';
+                return true;
+            }
+        }
+    
+        function validateSubtitle() {
+            const value = subtitleInput.value;
+            if (value.length < 10 || value.length > 15) {
+                subtitleError.textContent = 'Subtitle must be between 10 and 15 characters.';
+                return false;
+            } else {
+                subtitleError.textContent = '';
+                return true;
+            }
+        }
+    
+        function validateAuthorName() {
+            const value = authorNameInput.value;
+            const regex = /^[A-Z][a-zA-Z\s]*$/;
+            if (!regex.test(value) || value.length > 15) {
+                authorNameError.textContent = 'Author name must start with a capital letter, have no special characters, and be up to 15 characters long.';
+                return false;
+            } else {
+                authorNameError.textContent = '';
+                return true;
+            }
+        }
+    
+        function validateEmail() {
+            const value = emailInput.value;
+            const emailPattern = /^[^\s@]{1,25}@[^\s@]{1,15}\.[^\s@]{1,9}$/;
+            if (!emailPattern.test(value)) {
+                emailError.textContent = 'Email must be valid and follow the constraints.';
+                return false;
+            } else {
+                emailError.textContent = '';
+                return true;
+            }
+        }
+    
+        function validateForm() {
+            const isTitleValid = validateTitle();
+            const isSubtitleValid = validateSubtitle();
+            const isAuthorNameValid = validateAuthorName();
+            const isEmailValid = validateEmail();
+            return isTitleValid && isSubtitleValid && isAuthorNameValid && isEmailValid;
+        }
+    
+        form.addEventListener('submit', (event) => {
+            if (!validateForm()) {
+                event.preventDefault(); // Prevent form submission if there are validation errors
+                alert('Please correct the errors in the form before submitting.');
+            }
+        });
+    
+        // Add event listeners to individual fields for real-time validation
+        titleInput.addEventListener('input', validateTitle);
+        subtitleInput.addEventListener('input', validateSubtitle);
+        authorNameInput.addEventListener('input', validateAuthorName);
+        emailInput.addEventListener('input', validateEmail);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,6 @@
+<!-- edit_user.html -->
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}  <!-- This will render all fields as paragraphs -->
+    <button type="submit" class="btn btn-primary">Update Role</button>
+</form>

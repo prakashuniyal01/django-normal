@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Custom CSS for input validation feedback */
+        .valid-feedback {
+            display: none;
+        }
+        .is-valid + .valid-feedback {
+            display: block;
+        }
+        .is-invalid + .invalid-feedback {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+
+
+        <div class="col-md-12">
+          <div class="d-flex col-md-12 justify-content-center align-items-center" style="height: 80vh;">
+            <div class="card shadow justify-content-center align-items-center col-md-12" >
+              <div class="card-body col-md-6">
+        <h2 class="text-center mb-1">Register</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-12">
+                <form method="post" id="registerForm" novalidate>
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="id_username">Username</label>
+                        <input type="text" class="form-control" id="id_username" name="username" required>
+                        <div class="invalid-feedback">Username is required and must be unique (max 8 characters). It can only contain letters, numbers, or periods (`.`) and must not start with a special character or number.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_email">Email address</label>
+                        <input type="email" class="form-control" id="id_email" name="email" required>
+                        <div class="invalid-feedback">Invalid email address.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_first_name">First Name</label>
+                        <input type="text" class="form-control" id="id_first_name" name="first_name" required>
+                        <div class="invalid-feedback">First name is required (max 10 characters).</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_last_name">Last Name</label>
+                        <input type="text" class="form-control" id="id_last_name" name="last_name">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_role">Role</label>
+                        <select class="form-control" id="id_role" name="role" required>
+                            <option value="">Select a role</option>
+                            <option value="journalist">Journalist</option>
+                            <option value="editor">Editor</option>
+                            <option value="head">Head</option>
+                        </select>
+                        <div class="invalid-feedback">Please select a role.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_password1">Password</label>
+                        <input type="password" class="form-control" id="id_password1" name="password1" required minlength="8">
+                        <div class="invalid-feedback">
+                            Password must be at least 8 characters long and meet the following conditions:
+                            <ul>
+                                <li>Contain at least one lowercase letter.</li>
+                                <li>Contain at least one uppercase letter.</li>
+                                <li>Contain at least one special character.</li>
+                                <li>Can't be similar to username, first name, or last name.</li>
+                                <li>Cannot contain consecutive numbers.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_password2">Confirm Password</label>
+                        <input type="password" class="form-control" id="id_password2" name="password2" required>
+                        <div class="invalid-feedback">Passwords do not match.</div>
+                    </div>
+
+                    <!-- Display Django form validation errors -->
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <ul>
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                                {% for error in form.non_field_errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    <button type="submit" class="btn  btn-block" style="background-color:#d4d3cf;">Register</button>
+                    <p class="line-container mt-2">
+                        Came here by mistake. <a href="{% url 'login' %}" >Don't worry, Touch Me!!!</a>
+                    </p>
+
+                </form>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Real-time validation script -->
+    <script>
+        (function() {
+            'use strict';
+            var form = document.getElementById('registerForm');
+            var username = document.getElementById('id_username');
+            var email = document.getElementById('id_email');
+            var firstName = document.getElementById('id_first_name');
+            var lastName = document.getElementById('id_last_name');
+            var password1 = document.getElementById('id_password1');
+            var password2 = document.getElementById('id_password2');
+
+            function validateUsername() {
+                var usernameValue = username.value;
+                var valid = /^[a-zA-Z][a-zA-Z0-9.]{0,7}$/.test(usernameValue);
+                if (!valid) {
+                    username.classList.add('is-invalid');
+                    username.classList.remove('is-valid');
+                } else {
+                    username.classList.remove('is-invalid');
+                    username.classList.add('is-valid');
+                }
+            }
+
+            function validateEmail() {
+                var emailValue = email.value;
+                var parts = emailValue.split('@');
+                var valid = parts.length === 2 &&
+                    parts[0].length <= 15 &&
+                    /^[a-zA-Z0-9.]{1,15}$/.test(parts[0]) &&
+                    parts[1].length <= 15 && // Total length including domain
+                    /^[a-zA-Z0-9]{1,15}\.[a-zA-Z]{2,}$/.test(parts[1]); // Domain part, with at least two characters in the top-level domain
+
+                if (!valid) {
+                    email.classList.add('is-invalid');
+                    email.classList.remove('is-valid');
+                } else {
+                    email.classList.remove('is-invalid');
+                    email.classList.add('is-valid');
+                }
+            }
+
+            function validateFirstName() {
+                if (firstName.value.length > 10) {
+                    firstName.classList.add('is-invalid');
+                    firstName.classList.remove('is-valid');
+                } else {
+                    firstName.classList.remove('is-invalid');
+                    firstName.classList.add('is-valid');
+                }
+            }
+
+            function validateLastName() {
+                if (lastName.value.length > 10) {
+                    lastName.classList.add('is-invalid');
+                    lastName.classList.remove('is-valid');
+                } else {
+                    lastName.classList.remove('is-invalid');
+                    lastName.classList.add('is-valid');
+                }
+            }
+
+            function validatePassword() {
+                var passwordValue = password1.value;
+                var isValid = true;
+                var errors = [];
+
+                // Check minimum length
+                if (passwordValue.length < 8) {
+                    isValid = false;
+                    errors.push("Password must be at least 8 characters long.");
+                }
+
+                // Check for at least one lowercase letter
+                if (!/[a-z]/.test(passwordValue)) {
+                    isValid = false;
+                    errors.push("Password must contain at least one lowercase letter.");
+                }
+
+                // Check for at least one uppercase letter
+                if (!/[A-Z]/.test(passwordValue)) {
+                    isValid = false;
+                    errors.push("Password must contain at least one uppercase letter.");
+                }
+
+                // Check for at least one special character
+                if (!/[!@#$%^&*(),.?":{}|<>]/.test(passwordValue)) {
+                    isValid = false;
+                    errors.push("Password must contain at least one special character.");
+                }
+
+
+                // Check for consecutive numbers
+                if (/012|123|234|345|456|567|678|789/.test(passwordValue)) {
+                    isValid = false;
+                    errors.push("Password must not contain consecutive numbers.");
+                }
+
+                if (isValid) {
+                    password1.classList.remove('is-invalid');
+                    password1.classList.add('is-valid');
+                } else {
+                    password1.classList.add('is-invalid');
+                    password1.classList.remove('is-valid');
+                    password1.nextElementSibling.innerHTML = errors.join('<br>');
+                }
+            }
+
+            function validatePasswordMatch() {
+                if (password1.value === password2.value) {
+                    password2.classList.add('is-valid');
+                    password2.classList.remove('is-invalid');
+                } else {
+                    password2.classList.add('is-invalid');
+                    password2.classList.remove('is-valid');
+                }
+            }
+
+            username.addEventListener('input', validateUsername);
+            email.addEventListener('input', validateEmail);
+            firstName.addEventListener('input', validateFirstName);
+            lastName.addEventListener('input', validateLastName);
+            password1.addEventListener('input', validatePassword);
+            password2.addEventListener('input', validatePasswordMatch);
+
+            form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false || 
+                    username.classList.contains('is-invalid') || 
+                    email.classList.contains('is-invalid') || 
+                    firstName.classList.contains('is-invalid') || 
+                    lastName.classList.contains('is-invalid') || 
+                    password1.classList.contains('is-invalid') || 
+                    password2.classList.contains('is-invalid')) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        })();
+    </script>
+</body>
+</html>

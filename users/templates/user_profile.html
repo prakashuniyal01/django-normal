@@ -1,0 +1,182 @@
+{% extends 'users/base.html' %}
+
+{% block title %}User Profile{% endblock %}
+
+{% block content %}
+{% load static %}
+<div class="container mt-5">
+    <h2 class="text-center">User Profile</h2>
+    <div class="d-flex justify-content-center mt-4">
+        <!-- Toggle buttons -->
+        <button id="profileDetailsBtn" class="btn btn-primary mx-2">Profile Details</button>
+        <button id="changePasswordBtn" class="btn btn-secondary mx-2">Change Password</button>
+    </div>
+
+    <!-- Notification Message -->
+    <div id="notification" class="alert alert-success d-none text-center mt-4" role="alert"></div>
+
+    <!-- Profile Details Form -->
+    <div id="profileDetailsForm" class="mt-4" style="display: none;">
+        <h3 class="text-center">Edit Profile</h3>
+        <form id="profileForm" method="POST" enctype="multipart/form-data" action="{% url 'user_profile' %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="first_name" class="form-label">First Name</label>
+                <input type="text" id="first_name" name="first_name" class="form-control" value="{{ user.first_name }}">
+                <div id="firstNameError" class="text-danger"></div>
+            </div>
+            <div class="mb-3">
+                <label for="last_name" class="form-label">Last Name</label>
+                <input type="text" id="last_name" name="last_name" class="form-control" value="{{ user.last_name }}">
+                <div id="lastNameError" class="text-danger"></div>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" name="email" class="form-control" value="{{ user.email }}" readonly>
+            </div>
+            <div class="text-center">
+                <button type="submit" name="update_profile" class="btn btn-success">Update Profile</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Change Password Form -->
+    <div id="changePasswordForm" class="mt-4" style="display: none;">
+        <h3 class="text-center">Change Password</h3>
+        <form id="passwordForm" method="POST" action="{% url 'user_profile' %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="current_password" class="form-label">Current Password</label>
+                <input type="password" id="current_password" name="current_password" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="new_password" class="form-label">New Password</label>
+                <input type="password" id="new_password" name="new_password" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="confirm_password" class="form-label">Confirm New Password</label>
+                <input type="password" id="confirm_password" name="confirm_password" class="form-control" required>
+            </div>
+            <div class="text-center">
+                <button type="submit" name="change_password" class="btn btn-danger">Change Password</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// JavaScript to handle toggle between forms
+document.getElementById('profileDetailsBtn').addEventListener('click', function() {
+    document.getElementById('profileDetailsForm').style.display = 'block';
+    document.getElementById('changePasswordForm').style.display = 'none';
+    this.classList.add('btn-primary');
+    this.classList.remove('btn-secondary');
+    document.getElementById('changePasswordBtn').classList.add('btn-secondary');
+    document.getElementById('changePasswordBtn').classList.remove('btn-primary');
+});
+
+document.getElementById('changePasswordBtn').addEventListener('click', function() {
+    document.getElementById('changePasswordForm').style.display = 'block';
+    document.getElementById('profileDetailsForm').style.display = 'none';
+    this.classList.add('btn-primary');
+    this.classList.remove('btn-secondary');
+    document.getElementById('profileDetailsBtn').classList.add('btn-secondary');
+    document.getElementById('profileDetailsBtn').classList.remove('btn-primary');
+});
+
+// By default, show the profile details form
+document.getElementById('profileDetailsBtn').click();
+
+// Real-time validation for profile details
+document.getElementById('profileForm').addEventListener('input', function(event) {
+    const firstName = document.getElementById('first_name');
+    const lastName = document.getElementById('last_name');
+    
+    const firstNameError = document.getElementById('firstNameError');
+    const lastNameError = document.getElementById('lastNameError');
+    
+    // Validate first name
+    const firstNameValue = firstName.value;
+    if (/[^a-zA-Z\s]/.test(firstNameValue) || firstNameValue !== capitalize(firstNameValue)) {
+        firstNameError.textContent = 'First name should start with a capital letter and contain no special characters or numbers.';
+    } else {
+        firstNameError.textContent = '';
+    }
+    
+    // Validate last name
+    const lastNameValue = lastName.value;
+    if (/[^a-zA-Z\s]/.test(lastNameValue) || lastNameValue !== capitalize(lastNameValue)) {
+        lastNameError.textContent = 'Last name should start with a capital letter and contain no special characters or numbers.';
+    } else {
+        lastNameError.textContent = '';
+    }
+});
+
+// Helper function to capitalize the first letter of a string
+function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+// Real-time validation for change password
+document.getElementById('passwordForm').addEventListener('input', function(event) {
+    const oldPassword = document.getElementById('old_password');
+    const newPassword1 = document.getElementById('new_password1');
+    const newPassword2 = document.getElementById('new_password2');
+    
+    const oldPasswordError = document.getElementById('oldPasswordError');
+    const newPasswordError = document.getElementById('newPasswordError');
+    const confirmPasswordError = document.getElementById('confirmPasswordError');
+    
+    const username = '{{ user.username }}';
+    const email = '{{ user.email }}';
+    const firstName = document.getElementById('first_name').value;
+    const lastName = document.getElementById('last_name').value;
+
+    // Validate current password
+    if (!oldPassword.value) {
+        oldPasswordError.textContent = 'Current password is required.';
+    } else {
+        oldPasswordError.textContent = '';
+    }
+    
+    // Validate new password
+    const newPasswordValue = newPassword1.value;
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8}$/;
+    if (!passwordPattern.test(newPasswordValue) || newPasswordValue.includes(username) || newPasswordValue.includes(email) || newPasswordValue.includes(firstName) || newPasswordValue.includes(lastName)) {
+        newPasswordError.textContent = 'Password must be 8 characters long, contain one special character, one lowercase letter, one uppercase letter, and must not be similar to personal information.';
+    } else {
+        newPasswordError.textContent = '';
+    }
+    
+    // Validate confirm new password
+    if (newPassword1.value !== newPassword2.value) {
+        confirmPasswordError.textContent = 'Passwords do not match.';
+    } else {
+        confirmPasswordError.textContent = '';
+    }
+});
+
+// Function to show notification message
+function showNotification(message) {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    notification.classList.remove('d-none');
+    setTimeout(() => {
+        notification.classList.add('d-none');
+    }, 5000);
+}
+
+// Example of showing notification after form submission
+document.getElementById('profileForm').addEventListener('submit', function(event) {
+    // Add your form submission logic here
+    event.preventDefault(); // Prevent form submission for demo purposes
+    showNotification('Your Profile has Updated!!!');
+});
+
+document.getElementById('passwordForm').addEventListener('submit', function(event) {
+    // Add your form submission logic here
+    event.preventDefault(); // Prevent form submission for demo purposes
+    showNotification('Your Password has Changed!!!');
+});
+</script>
+{% endblock %}

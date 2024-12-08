@@ -1,0 +1,106 @@
+{% extends 'users/base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="sticky-top bg-light">
+            </div>
+            <div class="feed-container">
+                {% for article in articles %}
+                    <div class="card mb-4 shadow-sm border-light">
+                        {% if article.image %}
+                            <div class="img-container">
+                                <img src="{{ article.image.url }}" class="card-img-top" alt="{{ article.title }}">
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ article.title }}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">{{ article.subtitle }}</h6>
+                            <p class="card-text">{{ article.content|slice:":200" }}...</p>
+                            <a href="{% url 'article_detail' article.pk %}" class="btn btn-primary">Read More</a>
+                            {% comment %} <button class="btn btn-outline-primary ms-2 like-button" data-article-id="{{ article.pk }}">
+                                {% if user in article.likes.all %}
+                                    <i class="fas fa-thumbs-up"></i> Unlike
+                                {% else %}
+                                    <i class="far fa-thumbs-up"></i> Like
+                                {% endif %}
+                            </button> {% endcomment %}
+                            {% comment %} <span class="badge bg-secondary ms-2 like-count">{{ article.likes.count }} Likes</span>
+                            <div class="mt-2">
+                                <strong>Last comment:</strong> {{ article.last_comment }} by {{ article.commenter }}
+                            </div> {% endcomment %}
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-center">No articles available.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.like-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const articleId = this.getAttribute('data-article-id');
+            const url = "{% url 'like_article' 0 %}".replace(0, articleId);
+
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                const likeCountSpan = this.nextElementSibling;
+                likeCountSpan.textContent = data.likes_count + ' Likes';
+                this.querySelector('i').classList.toggle('fas');
+                this.querySelector('i').classList.toggle('far');
+            });
+        });
+    });
+</script>
+
+<style>
+    .feed-container {
+        padding: 0;
+    }
+
+    .card {
+        border: none;
+        margin: 0 auto;
+    }
+
+    .img-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .card-img-top {
+        width: auto;
+        height: auto;
+        max-width: 100%; /* Adjust the image to fit the card width */
+        max-height: 300px; /* Optional: Control the max height of the image */
+        object-fit: cover; /* Ensure the image covers the area */
+    }
+
+    .card-body {
+        padding: 15px;
+    }
+
+    .like-button {
+        margin-top: 10px;
+    }
+
+    .sticky-top {
+        background-color: #fff;
+        z-index: 10;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,148 @@
+{% extends "users/base.html" %}
+
+{% block title %}Journalist Dashboard{% endblock %}
+
+{% block content %}
+    <style>
+    /* Style for the article table */
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed; /* Fix table layout */
+    }
+
+    .table th, .table td {
+        padding: 10px 8px; /* Reduced padding */
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+        word-wrap: break-word; /* Force word wrap for long content */
+        vertical-align: middle;
+    }
+
+    .table th {
+        background-color: #f8f9fa;
+        font-weight: bold;
+        white-space: nowrap; /* Prevent headers from wrapping */
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #f2f2f2;
+    }
+
+    .table img {
+        display: block;
+        margin: 0 auto; /* Center the image */
+        width: 80px; /* Reduce image size */
+        height: 80px;
+        object-fit: cover; /* Ensure the image fills the container while maintaining aspect ratio */
+    }
+
+    .table .badge {
+        font-size: 0.9rem;
+    }
+
+    .table td {
+        max-width: 150px; /* Set a maximum width for the cells */
+        white-space: normal; /* Allow text to wrap */
+        overflow-wrap: break-word; /* Break long words */
+        text-overflow: ellipsis; /* Truncate overflowed text */
+    }
+
+    .table th:nth-child(1), .table td:nth-child(1) {
+        text-align: center; /* Center the # column */
+        width: 5%; /* Reduce the width of the # column */
+    }
+
+    .table th:nth-child(4), .table td:nth-child(4) {
+        text-align: center; /* Center the Image column */
+    }
+
+    /* Responsive adjustments for smaller screens */
+    @media (max-width: 992px) {
+        .table th, .table td {
+            padding: 8px;
+            font-size: 0.9rem; /* Slightly smaller text for medium screens */
+        }
+
+        .table img {
+            width: 70px; /* Slightly smaller image for medium screens */
+            height: 70px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .table th, .table td {
+            padding: 6px;
+            font-size: 0.85rem; /* Smaller text for small screens */
+        }
+
+        .table img {
+            width: 60px; /* Reduce image size on small screens */
+            height: 60px;
+        }
+
+        .table-responsive {
+            overflow-x: auto; /* Enable horizontal scrolling for small screens */
+        }
+    }
+
+    @media (max-width: 576px) {
+        .table th, .table td {
+            font-size: 0.8rem; /* Further reduce text size for extra small screens */
+            padding: 6px;
+        }
+
+        .table img {
+            width: 50px; /* Further reduce image size on extra small screens */
+            height: 50px;
+        }
+    }
+    </style>
+
+    <div class="container mt-5">
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h2 class="text-center mb-4">Submitted Articles</h2>
+                        {% if articles %}
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Title</th>
+                                            <th>Author Name</th>
+                                            <th>Image</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for article in articles %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ article.title }}</td>
+                                                <td>{{ article.author_name }}</td>
+                                                <td>
+                                                    {% if article.image %}
+                                                        <img src="{{ article.image.url }}" alt="Article Image">
+                                                    {% else %}
+                                                        No Image
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ article.get_status_display }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-center">No articles submitted yet.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

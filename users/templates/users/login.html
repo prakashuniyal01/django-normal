@@ -1,0 +1,109 @@
+{% extends 'users/base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+{% load static %}
+<div class="container mt-5">
+
+
+    <div class="col-md-12">
+      <div class="d-flex justify-content-center align-items-center" style="height: 60vh;">
+        <div class="card shadow" style="width: 400px;">
+          <div class="card-body">
+            <h5 class="card-title text-center my-4">Login</h5>
+            <form method="POST" action="{% url 'login' %}" id="login-form">
+              {% csrf_token %}
+
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+                <span id="email-validation" class="text-danger"></span>
+              </div>
+
+              <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+                <div id="password-validation" class="text-danger" data-validation="Password is required"></div>
+              </div>
+
+              {% if form.non_field_errors %}
+              <div class="alert alert-danger">
+                {{ form.non_field_errors.0 }}
+              </div>
+              {% endif %}
+
+              <div class="d-grid">
+                <button type="submit" class="btn" style="background-color:#d4d3cf;" id="submit-btn">Login</button>
+              </div>
+            </form>
+
+            <p class="mt-3 text-center">
+              Forgot your password? <a href="{% url 'password_reset' %}">Reset here</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const emailInput = document.getElementById('email');
+    const emailValidation = document.getElementById('email-validation');
+    
+    const allowedSingleDomains = ['com', 'in', 'us']; // Add allowed single domains here
+    const validMultiDomainTLDs = ['com.in', 'ac.in', 'gov.in']; // Add valid multi-domain TLDs here
+
+    emailInput.addEventListener('input', function() {
+      const emailValue = emailInput.value;
+      const emailParts = emailValue.split('@');
+
+      if (emailParts.length === 2) {
+        const localPart = emailParts[0];
+        const domainPart = emailParts[1];
+        const domainParts = domainPart.split('.');
+
+        // Validate local part
+        if (localPart.length > 20) {
+          emailValidation.textContent = 'The part before "@" must be 20 characters or less.';
+          return;
+        }
+
+        // Validate domain part
+        if (domainParts.length < 2 || domainParts.length > 3) {
+          emailValidation.textContent = 'Invalid domain format.';
+          return;
+        }
+
+        const tld = domainParts.slice(-2).join('.');
+        const singleDomain = domainParts.slice(-1)[0];
+
+        // Check for valid multi-domain TLDs
+        if (domainParts.length === 3) {
+          if (validMultiDomainTLDs.includes(tld)) {
+            emailValidation.textContent = '';
+          } else {
+            emailValidation.textContent = 'Invalid multi-domain TLD.';
+          }
+          return;
+        }
+
+        // Check for single domains
+        if (domainParts.length === 2) {
+          if (allowedSingleDomains.includes(singleDomain)) {
+            emailValidation.textContent = '';
+          } else {
+            emailValidation.textContent = 'Domain not allowed.';
+          }
+          return;
+        }
+
+        // Default case
+        emailValidation.textContent = 'Invalid email format.';
+      } else {
+        emailValidation.textContent = 'Invalid email format.';
+      }
+    });
+  });
+</script>
+{% endblock %}
