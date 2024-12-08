@@ -131,8 +131,8 @@
     <!-- Header Strip -->
     <nav class="navbar navbar-expand-lg navbar-dark header-strip">
         <div class="container">
-            <img src="{% static 'images/logo.png' %}" alt="Logo" style="height: 60px;">
-            <h1>Article Gallery</h1>
+            <img src="" alt="" style="height: 60px;">
+            {% comment %} <h1>Article Gallery</h1> {% endcomment %}
             {% if user.is_authenticated %}
                 <div class="d-flex align-items-center">
                     <div class="dropdown">
@@ -147,7 +147,7 @@
                 </div>
             {% else %}
                 <h5>
-                    <a href="{% url 'register' %}" class="custom-btn">Join</a>
+                    <a href="{% url 'register' %}" class="custom-btn">Register</a>
                     <a href="{% url 'login' %}" class="custom-btn">Login</a>
                 </h5>
             {% endif %}

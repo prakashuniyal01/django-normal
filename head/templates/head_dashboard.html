@@ -15,6 +15,7 @@
         .dashboard-card {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
         }
         .dashboard-card:hover {
             transform: translateY(-5px);
@@ -36,48 +37,6 @@
         .table-hover tbody tr:hover {
             background-color: #f1f1f1;
         }
-        .badge-success {
-            background-color: #28a745 !important;
-        }
-        .badge-warning {
-            background-color: #ffc107 !important;
-        }
-        .badge-danger {
-            background-color: #dc3545 !important;
-        }
-        .modal-content {
-            border-radius: 10px;
-        }
-        .modal-header {
-            background-color: #007bff;
-            color: white;
-        }
-        .modal-footer button {
-            border-radius: 20px;
-        }
-        .btn-primary, .btn-danger {
-            border-radius: 30px;
-            padding: 10px 20px;
-        }
-        .btn-danger {
-            background-color: #e74c3c;
-            color: white;
-        }
-        .table img {
-            width: 60px;
-            height: 60px;
-        }
-
-        tbody a {
-            color: #80cbc4;
-            text-decoration: none;
-        }
-
-        tbody a:hover {
-            text-decoration: underline;
-            color: #004d40;
-
-        }
     </style>
 </head>
 
@@ -91,52 +50,38 @@
         <!-- Dashboard Metrics -->
         <div class="row mb-4">
             <div class="col-md-4">
-                <div class="card dashboard-card">
-                    <div class="card-body">
-                        <h5>Published Articles</h5>
-                        <p>{{ published_count }}</p>
+                <a href="{% url 'head:filtered_articles' 'published' %}" class="text-decoration-none">
+                    <div class="card dashboard-card text-center">
+                        <div class="card-body">
+                            <h5>Published Articles</h5>
+                            <p>{{ published_count }}</p>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-md-4">
-                <div class="card dashboard-card">
-                    <div class="card-body">
-                        <h5>Submitted Articles</h5>
-                        <p>{{ submitted_count }}</p>
+                <a href="{% url 'head:filtered_articles' 'submitted' %}" class="text-decoration-none">
+                    <div class="card dashboard-card text-center">
+                        <div class="card-body">
+                            <h5>Submitted Articles</h5>
+                            <p>{{ submitted_count }}</p>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-md-4">
-                <div class="card dashboard-card">
-                    <div class="card-body">
-                        <h5>Rejected Articles</h5>
-                        <p>{{ rejected_count }}</p>
+                <a href="{% url 'head:filtered_articles' 'rejected' %}" class="text-decoration-none">
+                    <div class="card dashboard-card text-center">
+                        <div class="card-body">
+                            <h5>Rejected Articles</h5>
+                            <p>{{ rejected_count }}</p>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
         </div>
-
-         <form method="GET" class="mb-4">
-            <div class="row">
-                <div class="col-md-4">
-                    <input type="text" name="search" class="form-control" placeholder="Search by title" value="{{ search_query }}">
-                </div>
-                <div class="col-md-4">
-                    <select name="category" class="form-control">
-                        <option value="">-- Select Category --</option>
-                        {% for category in categories %}
-                            <option value="{{ category.name }}" {% if category.name == category_filter %}selected{% endif %}>{{ category.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <button type="submit" class="btn btn-secondary" style="background-color: #004d40;">Search</button>
-                    <!-- Reset button to clear filters -->
-                    <a href="{% url 'head:head_dashboard' %}" class="btn btn-secondary" style="background-color: #004d40;">Reset Filter</a>
-                </div>
-            </div>
-        </form>
-        <!-- Articles Table -->
+        
+        {% comment %} <!-- Articles Table -->
         <div class="card bg-white text-dark">
             <div class="card-header bg-primary text-light">
                 <h5>Articles Overview</h5>
@@ -148,65 +93,30 @@
                             <th>Title</th>
                             <th>Author</th>
                             <th>Created At</th>
-                            <th>Image</th>
                             <th>Status</th>
-                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for article in articles %}
                         <tr>
-                            <td><a href="{% url 'head:view_article' article.id %}" class="text-primary text-decoration-none">{{ article.title }}</a></td>
+                            <td><a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a></a></td>
                             <td>{{ article.author_name }}</td>
                             <td>{{ article.created_at }}</td>
                             <td>
-                                {% if article.image %}
-                                    <img src="{{ article.image.url }}" alt="Article Image">
-                                {% else %}
-                                    No Image
-                                {% endif %}
-                            </td>
-                            <td>
-                                <span class="badge {% if article.get_status_display == 'Accepted' %}bg-success{% elif article.get_status_display == 'Submitted' %}bg-warning{% elif article.get_status_display == 'Rejected' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                <span class="badge {% if article.get_status_display == 'Accepted' %}bg-success{% elif article.get_status_display == 'Submitted' %}bg-warning{% elif article.get_status_display == 'Rejected' %}bg-danger{% endif %}">
                                     {{ article.get_status_display }}
                                 </span>
                             </td>
-                            <td>
-                                <!-- Modal Trigger -->
-                                <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ article.id }}">Delete</button>
-                            </td>
                         </tr>
-
-                        <!-- Delete Confirmation Modal -->
-                        <div class="modal fade" id="deleteModal{{ article.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ article.id }}" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header bg-primary text-light">
-                                        <h5 class="modal-title" id="deleteModalLabel{{ article.id }}">Confirm Deletion</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        Are you sure you want to delete the article titled "{{ article.title }}"?
-                                    </div>
-                                    <div class="modal-footer">
-                                        <form method="post" action="{% url 'head:delete_article' article.id %}">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn btn-danger">Delete</button>
-                                        </form>
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         {% empty %}
                         <tr>
-                            <td colspan="5" class="text-center">No articles available.</td>
+                            <td colspan="4" class="text-center">No articles available.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-        </div>
+        </div> {% endcomment %}
     </div>
 
     <!-- Bootstrap 5 JS & Popper.js -->

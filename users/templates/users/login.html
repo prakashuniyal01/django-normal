@@ -4,55 +4,77 @@
 
 {% block content %}
 {% load static %}
+
+<style>
+  body {
+    background-image: url("{% static 'images/background.jpg' %}");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+  }
+  .overlay {
+    background-color: rgba(0, 0, 0, 0.6); /* Dark overlay */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+  }
+</style>
+
+<div class="overlay"></div>
 <div class="container mt-5">
-
-
-    <div class="col-md-12">
-      <div class="d-flex justify-content-center align-items-center" style="height: 60vh;">
-        <div class="card shadow" style="width: 400px;">
-          <div class="card-body">
-            <h5 class="card-title text-center my-4">Login</h5>
-            <form method="POST" action="{% url 'login' %}" id="login-form">
-              {% csrf_token %}
-
-              <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" name="email" required>
-                <span id="email-validation" class="text-danger"></span>
-              </div>
-
-              <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" name="password" required>
-                <div id="password-validation" class="text-danger" data-validation="Password is required"></div>
-              </div>
-
-              {% if form.non_field_errors %}
-              <div class="alert alert-danger">
-                {{ form.non_field_errors.0 }}
-              </div>
-              {% endif %}
-
-              <div class="d-grid">
-                <button type="submit" class="btn" style="background-color:#00796b;" id="submit-btn">Login</button>
-              </div>
-            </form>
-
-            <p class="mt-3 text-center">
-              Forgot your password? <a href="{% url 'password_reset' %}">Reset here</a>.
-            </p>
-          </div>
+  <div class="row justify-content-center align-items-center" style="height: 80vh;">
+    <!-- Left side with an image -->
+    {% comment %} <div class="col-lg-6 col-md-6">
+      <div class="card shadow" style="height: 100%; display: flex; justify-content: center; align-items: center;">
+        <img src="{% static 'images/image.png' %}" alt="Login" class="img-fluid rounded" style="max-height: 300px; max-width: 100%;">
+      </div>
+    </div> {% endcomment %}
+    
+    <!-- Right side with login form -->
+    <div class="col-lg-4 col-md-6">
+      <div class="card shadow">
+        <div class="card-body">
+          <h5 class="card-title text-center my-4">Login</h5>
+          <form method="POST" action="{% url 'login' %}" id="login-form">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email" required>
+              <span id="email-validation" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="password" name="password" required>
+              <div id="password-validation" class="text-danger" data-validation="Password is required"></div>
+            </div>
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              {{ form.non_field_errors.0 }}
+            </div>
+            {% endif %}
+            <div class="d-grid">
+              <button type="submit" class="btn" style="background-color:#00796b;" id="submit-btn">Login</button>
+            </div>
+          </form>
+          <p class="mt-3 text-center">
+            Forgot your password? <a href="{% url 'password_reset' %}">Reset here</a>.
+          </p>
+          <p class="mt-3 text-center">If you are not register then <a href="{% url 'register' %}">Register  </a>here </p>
         </div>
       </div>
+    </div>
+  </div>
 </div>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     const emailInput = document.getElementById('email');
     const emailValidation = document.getElementById('email-validation');
-    
-    const allowedSingleDomains = ['com', 'in', 'us']; // Add allowed single domains here
-    const validMultiDomainTLDs = ['com.in', 'ac.in', 'gov.in']; // Add valid multi-domain TLDs here
+    const allowedSingleDomains = ['com', 'in', 'us'];
+    const validMultiDomainTLDs = ['com.in', 'ac.in', 'gov.in'];
 
     emailInput.addEventListener('input', function() {
       const emailValue = emailInput.value;
@@ -63,13 +85,11 @@
         const domainPart = emailParts[1];
         const domainParts = domainPart.split('.');
 
-        // Validate local part
         if (localPart.length > 20) {
           emailValidation.textContent = 'The part before "@" must be 20 characters or less.';
           return;
         }
 
-        // Validate domain part
         if (domainParts.length < 2 || domainParts.length > 3) {
           emailValidation.textContent = 'Invalid domain format.';
           return;
@@ -78,7 +98,6 @@
         const tld = domainParts.slice(-2).join('.');
         const singleDomain = domainParts.slice(-1)[0];
 
-        // Check for valid multi-domain TLDs
         if (domainParts.length === 3) {
           if (validMultiDomainTLDs.includes(tld)) {
             emailValidation.textContent = '';
@@ -88,7 +107,6 @@
           return;
         }
 
-        // Check for single domains
         if (domainParts.length === 2) {
           if (allowedSingleDomains.includes(singleDomain)) {
             emailValidation.textContent = '';
@@ -98,7 +116,6 @@
           return;
         }
 
-        // Default case
         emailValidation.textContent = 'Invalid email format.';
       } else {
         emailValidation.textContent = 'Invalid email format.';

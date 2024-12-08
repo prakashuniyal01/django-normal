@@ -81,23 +81,23 @@ WSGI_APPLICATION = 'article_management.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'articledb',
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': 'localhost',  # Use '127.0.0.1' for localhost
-        'PORT': '3306',       # Default MySQL port
-    }
-}
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'articledb',
+#         'USER': 'root',
+#         'PASSWORD': 'root',
+#         'HOST': 'localhost',  # Use '127.0.0.1' for localhost
+#         'PORT': '3306',       # Default MySQL port
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 
 # Password validation

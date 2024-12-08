@@ -23,6 +23,10 @@ urlpatterns = [
     path('manage-articles/', views.manage_articles, name='manage_articles'),
     path('edit-article/<int:pk>/', views.edit_article, name='edit_article'),
     path('delete-article/<int:article_id>/', views.delete_article, name='delete_article'),
+
+    path('dashboard/', views.dashboard, name='head_dashboard'),
+    path('articles/<str:status>/', views.filtered_articles, name='filtered_articles'),
+    path('articles/<int:pk>/', views.view_article, name='view_article'),
     # path('manage-articles/', views.manage_articles, name='manage_articles'),
 
 ]

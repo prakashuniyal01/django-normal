@@ -4,10 +4,9 @@
 
 {% block content %}
     <style>
-        /* Global Style */
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #f4f7fc;
+            background-color: #f9f9f9;
             color: #333;
         }
 
@@ -15,7 +14,42 @@
             max-width: 1200px;
         }
 
-        /* Table Style */
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+            background-color: white;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-body {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .card-body h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #005f73;
+            margin-bottom: 10px;
+        }
+
+        .card-body p {
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        .table-container {
+            display: none;
+            margin-top: 20px;
+        }
+
         .table {
             width: 100%;
             border-collapse: collapse;
@@ -26,26 +60,18 @@
         }
 
         .table th, .table td {
-            padding: 14px 20px; /* More padding for better readability */
+            padding: 14px;
             text-align: left;
             border-bottom: 1px solid #ddd;
             word-wrap: break-word;
-            vertical-align: middle;
-            font-size: 1rem; /* Clearer font size */
         }
 
         .table th {
             background-color: #005f73;
             color: white;
-            font-weight: 600;
+            font-weight: bold;
         }
 
-        /* Hover effects for rows */
-        .table tbody tr:hover {
-            background-color: #e9ecef;
-        }
-
-        /* Image Styling */
         .table img {
             width: 70px;
             height: 70px;
@@ -53,15 +79,16 @@
             border-radius: 5px;
         }
 
-        /* Badge Style */
-        .badge {
-            font-size: 0.95rem;
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-weight: 500;
+        tbody a {
+            color: #007bff;
+            text-decoration: none;
         }
 
-        /* Button Styles */
+        tbody a:hover {
+            text-decoration: underline;
+            color: #004d40;
+        }
+
         .btn {
             padding: 5px 10px;
             font-size: 1rem;
@@ -90,39 +117,6 @@
             background-color: #c82333;
         }
 
-        /* .article-link {
-            color: #007bff;
-            text-decoration: none;
-        } */
-        tbody a {
-            color: #80cbc4;
-            text-decoration: none;
-        }
-
-        tbody a:hover {
-            text-decoration: underline;
-            color: #004d40;
-
-        }
-
-        /* Card Styling */
-        .card {
-            border-radius: 10px;
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-        }
-
-        .card-body {
-            padding: 30px;
-        }
-
-        .card-body h2 {
-            font-size: 1.8rem;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 20px;
-        }
-
         /* Responsive Design */
         @media (max-width: 768px) {
             .table th, .table td {
@@ -138,118 +132,118 @@
                 height: 50px;
             }
         }
-
-        @media (max-width: 576px) {
-            .table th, .table td {
-                font-size: 0.85rem;
-                padding: 10px;
-            }
-
-            .btn {
-                font-size: 0.85rem;
-            }
-
-            .table img {
-                width: 40px;
-                height: 40px;
-            }
-        }
     </style>
 
     <div class="container mt-5">
-        <!-- Published Articles Section -->
+        <!-- Article Count Cards -->
         <div class="row">
-            <div class="col-lg-12">
-                <div class="card shadow-sm">
+            <div class="col-lg-6">
+                <div class="card" onclick="toggleSection('published')">
                     <div class="card-body">
-                        <h2 class="text-center mb-4">Published Articles</h2>
-                        {% if published_articles %}
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Sr No.</th>
-                                            <th>Title</th>
-                                            <th>Author Name</th>
-                                            <th>Image</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for article in published_articles %}
-                                            <tr>
-                                                <td>{{ forloop.counter }}</td>
-                                                <td> <a href="{% url 'article_detail' article.pk %}" >{{ article.title }}</a></td>
-                                                <td>{{ article.author_name }}</td>
-                                                <td>
-                                                    {% if article.image %}
-                                                        <img src="{{ article.image.url }}" alt="Article Image">
-                                                    {% else %}
-                                                        No Image
-                                                    {% endif %}
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        {% else %}
-                            <p class="text-center">No published articles yet.</p>
-                        {% endif %}
+                        <h2>{{ published_articles|length }}</h2>
+                        <p>Published Articles</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card" onclick="toggleSection('submitted')">
+                    <div class="card-body">
+                        <h2>{{ submitted_articles|length }}</h2>
+                        <p>Submitted Articles</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Submitted Articles Section -->
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h2 class="text-center mb-4">Submitted Articles</h2>
-                        {% if submitted_articles %}
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Sr No.</th>
-                                            <th>Title</th>
-                                            <th>Author Name</th>
-                                            <th>Image</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for article in submitted_articles %}
-                                            <tr>
-                                                <td>{{ forloop.counter }}</td>
-                                                <td> <a href="{% url 'article_detail' article.pk %}" >{{ article.title }}</a></td>
-                                                <td>{{ article.author_name }}</td>
-                                                <td>
-                                                    {% if article.image %}
-                                                        <img src="{{ article.image.url }}" alt="Article Image">
-                                                    {% else %}
-                                                        No Image
-                                                    {% endif %}
-                                                </td>
-                                                <td>{{ article.get_status_display }}</td>
-                                                <td>
-                                                    {% if article.status == 'rejected' or article.status == 'submitted' %}
-                                                        <a href="{% url 'journalist:edit_article' article.id %}" class="btn btn-primary btn-sm">Edit</a>
-                                                        <a href="{% url 'journalist:delete_article' article.id %}" class="btn btn-danger btn-sm">Delete</a>
-                                                    {% endif %}
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        {% else %}
-                            <p class="text-center">No articles submitted yet.</p>
-                        {% endif %}
-                    </div>
+        <!-- Published Articles Table -->
+        <div id="published" class="table-container">
+            <h3 class="text-center mt-4">Published Articles</h3>
+            {% if published_articles %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Sr No.</th>
+                                <th>Title</th>
+                                <th>Author Name</th>
+                                <th>Image</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for article in published_articles %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td><a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a></td>
+                                    <td>{{ article.author_name }}</td>
+                                    <td>
+                                        {% if article.image %}
+                                            <img src="{{ article.image.url }}" alt="Article Image">
+                                        {% else %}
+                                            No Image
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
-            </div>
+            {% else %}
+                <p class="text-center">No published articles yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- Submitted Articles Table -->
+        <div id="submitted" class="table-container">
+            <h3 class="text-center mt-4">Submitted Articles</h3>
+            {% if submitted_articles %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Sr No.</th>
+                                <th>Title</th>
+                                <th>Author Name</th>
+                                <th>Image</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for article in submitted_articles %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td><a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a></td>
+                                    <td>{{ article.author_name }}</td>
+                                    <td>
+                                        {% if article.image %}
+                                            <img src="{{ article.image.url }}" alt="Article Image">
+                                        {% else %}
+                                            No Image
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ article.get_status_display }}</td>
+                                    <td>
+                                        {% if article.status == 'rejected' or article.status == 'submitted' %}
+                                            <a href="{% url 'journalist:edit_article' article.id %}" class="btn btn-primary btn-sm">Edit</a>
+                                            <a href="{% url 'journalist:delete_article' article.id %}" class="btn btn-danger btn-sm">Delete</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-center">No submitted articles yet.</p>
+            {% endif %}
         </div>
     </div>
+
+    <script>
+        function toggleSection(sectionId) {
+            const sections = document.querySelectorAll('.table-container');
+            sections.forEach(section => section.style.display = 'none');
+            document.getElementById(sectionId).style.display = 'block';
+        }
+    </script>
 {% endblock %}

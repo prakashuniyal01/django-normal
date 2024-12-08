@@ -52,6 +52,33 @@ def head_dashboard(request):
     paginated_reviewed_articles = paginator_reviewed.get_page(page_reviewed)
 
     return render(request, 'head_dashboard.html', context)
+
+from django.shortcuts import render, get_object_or_404
+# from .models import Article
+
+@role_required('head')
+def dashboard(request):
+    published_count = Article.objects.filter(status='published').count()
+    submitted_count = Article.objects.filter(status='submitted').count()
+    rejected_count = Article.objects.filter(status='rejected').count()
+
+    articles = Article.objects.all()
+    return render(request, 'head_dashboard.html', {
+        'published_count': published_count,
+        'submitted_count': submitted_count,
+        'rejected_count': rejected_count,
+        'articles': articles,
+    })
+
+def filtered_articles(request, status):
+    articles = Article.objects.filter(status=status)
+    return render(request, 'filtered_articles.html', {'articles': articles})
+
+def view_article(request, pk):
+    article = get_object_or_404(Article, pk=pk)
+    return render(request, 'head/view_article.html', {'article': article})
+
+
 def logout_view(request):
     auth_logout(request)
     request.session.flush()

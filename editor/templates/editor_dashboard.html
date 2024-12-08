@@ -4,29 +4,37 @@
 
 {% block content %}
 <style>
-    .btn {
-        background-color: #00796b;
-        color: white;
+    .card {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin-bottom: 1.5rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    .article-link {
-        color: #4b6596;
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
-    /* Image Styling */
-    .table img {
-            width: 70px;
-            height: 70px;
-            object-fit: cover;
-            border-radius: 5px;
-        }
-
-    tbody a {
-        color: #80cbc4;
+    .card img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+    }
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+    }
+    .card-status {
+        font-size: 0.9rem;
+        color: #00796b;
+    }
+    .card-actions a {
         text-decoration: none;
+        color: #00796b;
     }
-
-    tbody a:hover {
+    .card-actions a:hover {
         text-decoration: underline;
-        color: #004d40;
     }
 </style>
 
@@ -49,136 +57,74 @@
             </div>
             <div class="col-md-4">
                 <button type="submit" class="btn btn-primary">Search</button>
-                <!-- Reset button to clear filters -->
                 <a href="{% url 'editor:editor_dashboard' %}" class="btn btn-secondary">Reset Filter</a>
             </div>
         </div>
     </form>
 
-
-    <!-- Submitted Articles Section -->
+    <!-- Under Review Articles -->
     <div class="mb-4">
         <h2 class="text-center">Under Review Articles</h2>
         <hr>
         {% if submitted_articles %}
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Author Name</th>
-                        <th>Created At</th>
-                        <th>Image</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for article in submitted_articles %}
-                    <tr>
-                        <td><a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a></td>
-                        <td>{{ article.author_name }}</td>
-                        <td>{{ article.created_at }}</td>
-                        <td>
-                            {% if article.image %}
-                                <img src="{{ article.image.url }}" alt="Article Image">
-                            {% else %}
-                                No Image
-                            {% endif %}
-                        </td>
-                        <td>{{ article.get_status_display }}</td>
-                        <td><a href="{% url 'editor:review_article' article.id %}" class="btn">Review</a></td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" class="text-center">No articles submitted for review.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-
-            <!-- Pagination for Submitted Articles -->
-            <div class="pagination">
-                <span class="page-links">
-                    {% if submitted_articles.has_previous %}
-                        <!-- <a href="?page=1&search={{ search_query }}&category={{ category_filter }}">First</a> -->
-                        <a href="?page={{ submitted_articles.previous_page_number }}&search={{ search_query }}&category={{ category_filter }}">Previous</a>
-                    {% endif %}
-
-                    <span class="current">
-                        Page {{ submitted_articles.number }} of {{ submitted_articles.paginator.num_pages }}.
-                    </span>
-
-                    {% if submitted_articles.has_next %}
-                        <a href="?page={{ submitted_articles.next_page_number }}&search={{ search_query }}&category={{ category_filter }}">Next</a>
-                        <!-- <a href="?page={{ submitted_articles.paginator.num_pages }}&search={{ search_query }}&category={{ category_filter }}">Last</a> -->
-                    {% endif %}
-                </span>
+            <div class="row">
+                {% for article in submitted_articles %}
+                <div class="col-md-4">
+                    <div class="card" onclick="filterByRelated('{{ article.id }}')">
+                        {% if article.image %}
+                            <img src="{{ article.image.url }}" alt="Article Image">
+                        {% else %}
+                            <img src="placeholder.jpg" alt="No Image">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a>
+                            </h5>
+                            <p class="card-text">By {{ article.author_name }}</p>
+                            <p class="card-status">{{ article.get_status_display }}</p>
+                            <div class="card-actions">
+                                <a href="{% url 'editor:review_article' article.id %}">Review</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
         {% else %}
             <p class="text-center">No articles submitted for review.</p>
         {% endif %}
     </div>
 
-    <!-- Reviewed Articles Section -->
+    <!-- Reviewed Articles -->
     <div>
         <h2 class="text-center">Reviewed Articles</h2>
+        <hr>
         {% if reviewed_articles %}
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Author Name</th>
-                        <th>Created At</th>
-                        <th>Image</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for article in reviewed_articles %}
-                    <tr>
-                        <td><a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a></td>
-                        <td>{{ article.author_name }}</td>
-                        <td>{{ article.created_at }}</td>
-                        <td>
-                            {% if article.image %}
-                                <img src="{{ article.image.url }}" alt="Article Image">
-                            {% else %}
-                                No Image
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if article.status == 'published' %}
-                                <span class="badge bg-success">Published</span>
-                            {% else %}
-                                {{ article.get_status_display }}
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4" class="text-center">No articles have been reviewed yet.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-
-            <!-- Pagination for Reviewed Articles -->
-            <div class="pagination">
-                <span class="page-links">
-                    {% if reviewed_articles.has_previous %}
-                        <!-- <a href="?page_reviewed=1&search={{ search_query }}&category={{ category_filter }}">First</a> -->
-                        <a href="?page_reviewed={{ reviewed_articles.previous_page_number }}&search={{ search_query }}&category={{ category_filter }}">Previous</a>
-                    {% endif %}
-
-                    <span class="current">
-                        Page {{ reviewed_articles.number }} of {{ reviewed_articles.paginator.num_pages }}.
-                    </span>
-
-                    {% if reviewed_articles.has_next %}
-                        <a href="?page_reviewed={{ reviewed_articles.next_page_number }}&search={{ search_query }}&category={{ category_filter }}">Next</a>
-                        <!-- <a href="?page_reviewed={{ reviewed_articles.paginator.num_pages }}&search={{ search_query }}&category={{ category_filter }}">Last</a> -->
-                    {% endif %}
-                </span>
+            <div class="row">
+                {% for article in reviewed_articles %}
+                <div class="col-md-4">
+                    <div class="card" onclick="filterByRelated('{{ article.id }}')">
+                        {% if article.image %}
+                            <img src="{{ article.image.url }}" alt="Article Image">
+                        {% else %}
+                            <img src="placeholder.jpg" alt="No Image">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a>
+                            </h5>
+                            <p class="card-text">By {{ article.author_name }}</p>
+                            <p class="card-status">
+                                {% if article.status == 'published' %}
+                                    <span class="badge bg-success">Published</span>
+                                {% else %}
+                                    {{ article.get_status_display }}
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
         {% else %}
             <p class="text-center">No articles have been reviewed yet.</p>
@@ -186,4 +132,11 @@
     </div>
 </div>
 
+<script>
+    function filterByRelated(articleId) {
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('related_to', articleId);
+        window.location.search = urlParams.toString();
+    }
+</script>
 {% endblock %}
