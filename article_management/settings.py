@@ -155,18 +155,18 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
+EMAIL_HOST = 'smtp.gmail.com'  # e.g., smtp.gmail.com
+EMAIL_PORT = 587  # For TLS
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'rohit.aggar.11@gmail.com'
-EMAIL_HOST_PASSWORD = 'mfuy pttj qius sbky'  # Use the app-specific password
-DEFAULT_FROM_EMAIL = 'rohit.aggar.11@gmail.com'
+EMAIL_HOST_USER = 'maan03saab@gmail.com'
+EMAIL_HOST_PASSWORD = 'miow cpse aeom wdmi'
+DEFAULT_FROM_EMAIL = 'maan03saab@gmail.com'
 
 EMAIL_SSL_CERTFILE = certifi.where()
 EMAIL_SSL_KEYFILE = None
 EMAIL_TIMEOUT = None
 
-EDITOR_EMAIL = 'ankitk908432@gmail.com'
+# EDITOR_EMAIL = ''
 
 django.core.mail.backends.smtp.EmailBackend.ssl_context = ssl.create_default_context(cafile=certifi.where())
 
